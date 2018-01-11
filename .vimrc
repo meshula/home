@@ -5,6 +5,9 @@ if has("gui_running")
   colorscheme darkblue
 endif
 
+" for NERDTree
+execute pathogen#infect()
+
 " Enable use of the mouse for all modes
 set mouse=a
 
