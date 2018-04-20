@@ -5,6 +5,10 @@ if has("gui_running")
   colorscheme darkblue
 endif
 
+" open NERDTree in new tabs and windows if no command line args
+autocmd VimEnter * if !argc() | NERDTree | endif
+autocmd BufEnter * if !argc() | NERDTREEMirror | endif
+
 " for NERDTree
 execute pathogen#infect()
 
@@ -24,7 +28,7 @@ set ts=4
 " Attempt to determine the type of a file based on its name and possibly its
 " contents. Use this to allow intelligent auto-indenting for each filetype,
 " and for plugins that are filetype specific.
-filetype indent plugin on
+filetype plugin indent on
 
 " Show partial commands in the last line of the screen
 set showcmd
@@ -40,9 +44,12 @@ set wildmenu
 " the same indent as the line you're currently on. Useful for READMEs, etc.
 set autoindent
 
-set backspace=2
+set backspace=indent,eol,start
+set complete-=i
+set smarttab
+set nrformats-=octal
 set viminfo='20,\"50
-set history=50
+set history=1000
 
 " Display the cursor position on the last line of the screen or in the status
 " line of a window
@@ -59,3 +66,6 @@ set si
 set hlsearch
 syntax on
 
+set laststatus=2
+
+vmap r "_dP"
