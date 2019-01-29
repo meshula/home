@@ -5,12 +5,8 @@ if has("gui_running")
   colorscheme darkblue
 endif
 
-" open NERDTree in new tabs and windows if no command line args
-autocmd VimEnter * if !argc() | NERDTree | endif
-autocmd BufEnter * if !argc() | NERDTREEMirror | endif
-
-" for NERDTree
-execute pathogen#infect()
+" open netrw in new tabs and windows if no command line args
+autocmd VimEnter * if !argc() | Vexplore | endif
 
 " Enable use of the mouse for all modes
 set mouse=a
@@ -42,7 +38,7 @@ set wildmenu
 
 " When opening a new line and no filetype-specific indenting is enabled, keep
 " the same indent as the line you're currently on. Useful for READMEs, etc.
-set autoindent
+"set autoindent
 
 set backspace=indent,eol,start
 set complete-=i
@@ -69,3 +65,11 @@ syntax on
 set laststatus=2
 
 vmap r "_dP"
+
+let g:netrw_winsize = 25
+let g:netrw_browse_split = 4
+let g:netrw_liststyle = 3
+let g:netrw_altv = 1
+
+
+
