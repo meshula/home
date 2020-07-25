@@ -1,10 +1,13 @@
-set visualbell
 set guifont=Menlo:h12
 set encoding=utf8
 
 if has("gui_running")
   colorscheme darkblue
 endif
+
+" Do not flash or beep
+set noerrorbells visualbell t_vb=
+autocmd GUIEnter * set visualbell t_vb=
 
 " open netrw in new tabs and windows if no command line args
 autocmd VimEnter * if !argc() | Vexplore | endif
