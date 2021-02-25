@@ -70,6 +70,13 @@ set laststatus=2
 
 vmap r "_dP"
 
+nmap <F1> :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+imap <F1> <Esc>:set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+nmap <F2> :.w !pbcopy<CR><CR>
+vmap <F2> :w !pbcopy<CR><CR>
+
+
+
 let g:netrw_winsize = 25
 let g:netrw_browse_split = 4
 let g:netrw_liststyle = 3
