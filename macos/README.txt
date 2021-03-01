@@ -1,0 +1,9 @@
+To use touch-id for CLI sudo:
+
+# Open the sudo utility
+sudo vi /etc/pam.d/sudo
+
+# Add the following as the first line
+auth sufficient pam_tid.so
+
+
