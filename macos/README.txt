@@ -7,3 +7,6 @@ sudo vi /etc/pam.d/sudo
 auth sufficient pam_tid.so
 
 
+# to make home and end keys work like other platforms
+cp -r Library/KeyBindings ~/Library/KeyBindings
+
