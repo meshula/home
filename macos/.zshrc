@@ -7,7 +7,7 @@ fi
 
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$PATH:/usr/local/bin
+export PATH=/Users/nporcino/.cargo/bin/:$PATH:/usr/local/bin
 
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/nporcino/.oh-my-zsh
@@ -107,6 +107,7 @@ setopt    incappendhistory  #Immediately append to the history file, not just wh
 alias mk='make "$@" 2>&1 | less'
 
 #eval "$(starship init zsh)"
+eval `ssh-agent`
 autoload -U +X bashcompinit && bashcompinit
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
