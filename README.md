@@ -12,4 +12,8 @@ dot files
 ### wsl
 dot files
 
+### cargo
+cargo install ripgrep
+cargo install lsd
+cargo install git-delta
 
