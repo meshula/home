@@ -105,6 +105,9 @@ setopt    incappendhistory  #Immediately append to the history file, not just wh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias mk='make "$@" 2>&1 | less'
+alias h='history 1 | grep $@'
+alias ll='lsd -al'
+alias ls='lsd'
 
 #eval "$(starship init zsh)"
 eval `ssh-agent`
