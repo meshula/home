@@ -1,12 +1,13 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
+
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
+
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-
-# If you come from bash you might have to change your $PATH.
 export PATH=/Users/nporcino/.cargo/bin/:$PATH:/usr/local/bin
 
 # Path to your oh-my-zsh installation.
@@ -76,6 +77,18 @@ if [[ -n $SSH_CONNECTION ]]; then
 else
   export EDITOR='nvim'
 fi
+
+# enable vim hotkeys in zsh
+set -o vi
+bindkey -v
+function zle-line-init zle-keymap-select {
+    VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]%  %{$reset_color%}"
+    RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
+    zle reset-prompt
+}
+zle -N zle-line-init
+
+
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"

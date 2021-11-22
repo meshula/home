@@ -17,3 +17,9 @@ cargo install ripgrep
 cargo install lsd
 cargo install git-delta
 
+### zig for vim
+
+mkdir -p ~/.vim/pack/plugins/start/
+cd ~/.vim/pack/plugins/start/
+git clone https://github.com/ziglang/zig.vim
+

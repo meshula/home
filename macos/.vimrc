@@ -5,6 +5,26 @@ if has("gui_running")
   colorscheme darkblue
 endif
 
+" all this system clipboard stuff doesn't work
+
+" use the system clipboard
+"set clipboard=unnamedplus
+
+" Map Command C/V for the system clipboard
+"vnoremap <D-c> "*y
+"noremap <D-c> "*y
+"vnoremap <D-v> "*P
+"noremap <D-v> "*P
+
+" Map f1/f2 for windows
+"vnoremap r "_dP"
+"noremap <F1> :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+"imap <F1> <Esc>:set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+"noremap <F2> :.w !pbcopy<CR><CR>
+"vnoremap <F2> :w !pbcopy<CR><CR>
+
+let g:zig_fmt_autosave = 0
+
 " Do not flash or beep
 set noerrorbells visualbell t_vb=
 autocmd GUIEnter * set visualbell t_vb=
@@ -28,7 +48,11 @@ set ts=4
 " Attempt to determine the type of a file based on its name and possibly its
 " contents. Use this to allow intelligent auto-indenting for each filetype,
 " and for plugins that are filetype specific.
-filetype plugin indent on
+filetype on
+filetype plugin on
+filetype indent on
+
+autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 
 " Show partial commands in the last line of the screen
 set showcmd
@@ -51,6 +75,10 @@ set nrformats-=octal
 set viminfo='20,\"50
 set history=1000
 
+" force the terminal width to 80
+" set columns=80
+set colorcolumn=80
+
 " Display the cursor position on the last line of the screen or in the status
 " line of a window
 set ruler
@@ -68,19 +96,9 @@ syntax on
 
 set laststatus=2
 
-vmap r "_dP"
-
-nmap <F1> :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
-imap <F1> <Esc>:set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
-nmap <F2> :.w !pbcopy<CR><CR>
-vmap <F2> :w !pbcopy<CR><CR>
-
-
 
 let g:netrw_winsize = 25
 let g:netrw_browse_split = 4
 let g:netrw_liststyle = 3
 let g:netrw_altv = 1
-
-
 
