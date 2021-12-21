@@ -1,4 +1,4 @@
-set guifont=Menlo:h12
+set guifont="FantasqueSansMono Nerd Font Mono":h13
 set encoding=utf8
 
 if has("gui_running")
@@ -29,8 +29,11 @@ let g:zig_fmt_autosave = 0
 set noerrorbells visualbell t_vb=
 autocmd GUIEnter * set visualbell t_vb=
 
-" open netrw in new tabs and windows if no command line args
-autocmd VimEnter * if !argc() | Vexplore | endif
+if has("gui_running")
+else
+    " open netrw in new tabs and windows if no command line args
+    autocmd VimEnter * if !argc() | Vexplore | endif
+endif
 
 " Enable use of the mouse for all modes
 set mouse=a
@@ -96,6 +99,7 @@ syntax on
 
 set laststatus=2
 
+command Zsh e term://zsh | normal i
 
 let g:netrw_winsize = 25
 let g:netrw_browse_split = 4

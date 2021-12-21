@@ -1,0 +1,8 @@
+{
+   "languageserver": {
+       "zls" : {
+           "command": "/Users/nporcino/bin/zls",
+           "filetypes": ["zig"]
+       }
+   }
+}

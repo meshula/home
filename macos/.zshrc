@@ -125,7 +125,8 @@ alias ls='lsd'
 #eval "$(starship init zsh)"
 eval `ssh-agent`
 autoload -U +X bashcompinit && bashcompinit
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+source ~/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
