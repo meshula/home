@@ -9,11 +9,16 @@ endif
 set noerrorbells visualbell t_vb=
 autocmd GUIEnter * set visualbell t_vb=
 
-" open netrw in new tabs and windows if no command line args
-autocmd VimEnter * if !argc() | Vexplore | endif
+if has("gui_running")
+else
+    " open netrw in new tabs and windows if no command line args
+    autocmd VimEnter * if !argc() | Vexplore | endif
+endif
 
 " Enable use of the mouse for all modes
 set mouse=a
+" a little tweak for wsl:
+"set ttymouse=sgr
 
  " Display line numbers on the left
 set number
@@ -28,7 +33,11 @@ set ts=4
 " Attempt to determine the type of a file based on its name and possibly its
 " contents. Use this to allow intelligent auto-indenting for each filetype,
 " and for plugins that are filetype specific.
-filetype plugin indent on
+filetype on
+filetype plugin on
+filetype indent on
+
+autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 
 " Show partial commands in the last line of the screen
 set showcmd
@@ -51,6 +60,10 @@ set nrformats-=octal
 set viminfo='20,\"50
 set history=1000
 
+" force the terminal width to 80
+" set columns=80
+set colorcolumn=80
+
 " Display the cursor position on the last line of the screen or in the status
 " line of a window
 set ruler
@@ -68,12 +81,11 @@ syntax on
 
 set laststatus=2
 
-vmap r "_dP"
+command Zsh e term://zsh | normal i
+command Bash e term://bash | normal i
 
 let g:netrw_winsize = 25
 let g:netrw_browse_split = 4
 let g:netrw_liststyle = 3
 let g:netrw_altv = 1
-
-
 
