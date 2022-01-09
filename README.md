@@ -3,8 +3,27 @@
 ### git_config.sh
 Run once. Adds git alias lol and lola which will print a concise change history
 
+### git config --global core.autocrlf false
+
 ### start_ssh.sh
 Launches an ssh agent, and adds a key named github
+
+### windows terminal
+init.vim goes in ~/AppData/Local/nvim
+ssh keys go in ~/.ssh
+
+### windows install SSH server
+Settings > Optional Features > Add a feature > OpenSSH Client
+In an elevated powershell, 
+
+Set-Service -StartupType Manual ssh-agent
+Start-SshAgent
+
+edit git config --globel -e
+
+and add
+[core]
+    sshCommand = c:\WINDOWS\System32\OpenSSH\ssh.exe
 
 ### macos
 dot files
