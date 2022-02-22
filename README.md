@@ -52,5 +52,15 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
 p10k configure
 
+### theme.sh
 
+sudo curl -Lo ~/bin/theme.sh 'https://git.io/JM70M'
+sudo chmod +x ~/bin/theme.sh
+theme.sh --dark --list
+theme.sh zenburn
+
+### for clangd
+in order that C++ completion works within nvim:
+
+cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
