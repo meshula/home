@@ -7,7 +7,7 @@ vim.cmd([[set mouse=a]])
 vim.g.mapleader = " "
 vim.g.completion_enable_auto_popus = 1
 vim.g.neovide_cursor_vfx_mode = "railgun"
-vim.o.guifont = "FantasqueSansMono Nerd Font Mono:h13"
+--vim.o.guifont = "FantasqueSansMono Nerd Font Mono:h15"
 
 -- window options
 vim.wo.relativenumber = false
@@ -26,6 +26,8 @@ vim.o.smartcase = true
 vim.o.expandtab = true
 vim.o.clipboard = "unnamedplus"
 
+vim.g.airline_powerline_fonts = 1
+
 -- plugins
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
 print(install_path)
@@ -33,6 +35,12 @@ if fn.empty(fn.glob(install_path)) > 0 then
   packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
+--  _                    _   ____  _             _           
+-- | |    ___   __ _  __| | |  _ \| |_   _  __ _(_)_ __  ___ 
+-- | |   / _ \ / _` |/ _` | | |_) | | | | |/ _` | | '_ \/ __|
+-- | |__| (_) | (_| | (_| | |  __/| | |_| | (_| | | | | \__ \
+-- |_____\___/ \__,_|\__,_| |_|   |_|\__,_|\__, |_|_| |_|___/
+--                                          |__/
 require('packer').startup(function(use)
   -- git
   use "tpope/vim-fugitive"
@@ -45,6 +53,7 @@ require('packer').startup(function(use)
   use "vim-airline/vim-airline-themes"
   use "mhartington/oceanic-next"
   -- use "DanilaMihailov/beacon.nvim"
+  use "junegunn/vim-peekaboo"
 
   -- language support
   use "neovim/nvim-lspconfig"
@@ -52,14 +61,25 @@ require('packer').startup(function(use)
   use { "neoclide/coc.nvim", branch="release" }
   use "nvim-treesitter/nvim-treesitter"
   use "ziglang/zig.vim"
+  use "tikhomirov/vim-glsl"
+
   -- use "quadplay/vim-pyxlscript-syntax"
   
   -- editor
   use {
     'numToStr/Comment.nvim',
-    config = function()
-        require('Comment').setup()
+    config = function() 
+        require('Comment').setup({
+            mappings = { basic = true },
+            toggler = { line = 'gcc', block = 'gcC' },
+            opleader = { line = 'gcc', block = 'gcC' }
+        }) 
     end
+  }
+
+  use {
+	"pavanbhat1999/figlet.nvim",
+    requires = "numToStr/Comment.nvim",
   }
 
   -- file browser
@@ -95,15 +115,22 @@ vim.g.coc_global_extensions = {
     'coc-clangd',
 }
 
-api.nvim_set_keymap("n", "<leader>zsh", ":e term://zsh | normal i", {noremap=true})
-api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
+local map = vim.api.nvim_set_keymap
+api.nvim_set_keymap("n", "<leader>zsh", ":e term://zsh | normal i<CR>", {noremap=true})
+--api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
 
-api.nvim_set_keymap("n", "<leader>v", ":vsplit", {noremap=true})
-api.nvim_set_keymap("n", "<leader>h", ":split", {noremap=true})
+api.nvim_set_keymap("n", "<leader>v", ":vsplit<CR>", {noremap=true})
+api.nvim_set_keymap("n", "<leader>h", ":split<CR>", {noremap=true})
 
-api.nvim_set_keymap("n", "<leader>ls", ":NvimTreeOpen", {noremap=true})
+api.nvim_set_keymap("n", "<leader>ls", ":NvimTreeOpen<CR>", {noremap=true})
+
+api.nvim_set_keymap("n", "<leader>init", ":e ~/.config/nvim/init.lua<CR>", {noremap=true})
+
+vim.g.LanguageClient_serverCommands = { ['zig'] = {'/Users/nporcino/bin/zls'} }
 
 if false then
+    map("n", "<leader>d", "<cmd>lua vim.lsp.buf.definition()<CR>", {noremap=true})
+    map("n", "<leader>i", "<cmd>lua vim.lsp.buf.implementation()<CR>", {noremap=true})
     api.nvim_set_keymap("n", "K", 
       ':call LanguageClient#textDocument_hover()<CR>',  
       {noremap = true, silent = true})
@@ -114,6 +141,26 @@ if false then
       ':call LanguageClient#textDocument_rename()<CR>',  
       {noremap = true, silent = true})
 end
+
+vim.api.nvim_set_keymap(
+    "n",
+    "K",
+    "<cmd>lua show_documentation()<cr>",
+    {noremap=1, silent=1}
+)
+function show_documentation()
+    local filetype = vim.bo.filetype
+    if filetype == "vim" or filetype == "help" then
+        vim.cmd("h " .. vim.fn.expand("<cword>"))
+    elseif vim.fn["coc#rpc#ready"]() then
+        vim.fn.CocActionAsync("doHover")
+    else
+        vim.cmd(
+        "!" .. vim.bo.keywordprg .. " " .. vim.fn.expand("<cword>")
+        )
+    end
+end
+
 
 -- each of these are documented in `:help nvim-tree.OPTION_NAME`
 require'nvim-tree'.setup {
@@ -196,6 +243,10 @@ require'nvim-tree'.setup {
     }
   }
 }
+
+require("figlet").Config({font="standard"})
+-- require("figlet").Config({font="small"})
+
 
 api.nvim_command [[colorscheme OceanicNext]]
 
