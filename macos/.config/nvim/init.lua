@@ -3,11 +3,13 @@ local vim = vim
 local api = vim.api
 local fn = vim.fn
 -- user interface
-vim.cmd([[set mouse=a]])
 vim.g.mapleader = " "
 vim.g.completion_enable_auto_popus = 1
 vim.g.neovide_cursor_vfx_mode = "railgun"
 --vim.o.guifont = "FantasqueSansMono Nerd Font Mono:h15"
+
+-- mouse
+vim.cmd([[set mouse=a]])
 
 -- window options
 vim.wo.relativenumber = false
@@ -117,7 +119,7 @@ vim.g.coc_global_extensions = {
 
 local map = vim.api.nvim_set_keymap
 api.nvim_set_keymap("n", "<leader>zsh", ":e term://zsh | normal i<CR>", {noremap=true})
---api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
+api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
 
 api.nvim_set_keymap("n", "<leader>v", ":vsplit<CR>", {noremap=true})
 api.nvim_set_keymap("n", "<leader>h", ":split<CR>", {noremap=true})
