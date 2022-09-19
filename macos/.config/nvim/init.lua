@@ -128,7 +128,10 @@ api.nvim_set_keymap("n", "<leader>ls", ":NvimTreeOpen<CR>", {noremap=true})
 
 api.nvim_set_keymap("n", "<leader>init", ":e ~/.config/nvim/init.lua<CR>", {noremap=true})
 
+-- @{ zig
 vim.g.LanguageClient_serverCommands = { ['zig'] = {'/Users/nporcino/bin/zls'} }
+vim.g.zig_fmt_autosave = 0
+-- @]
 
 if false then
     map("n", "<leader>d", "<cmd>lua vim.lsp.buf.definition()<CR>", {noremap=true})
@@ -162,6 +165,11 @@ function show_documentation()
         )
     end
 end
+
+vim.api.nvim_set_keymap("n",
+    "gD", "<cmd>call CocActionAsync('jumpDefinition')<cr>",
+    {noremap=1, silent=1}
+)    
 
 
 -- each of these are documented in `:help nvim-tree.OPTION_NAME`
