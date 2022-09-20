@@ -1,8 +1,9 @@
 # home
 
-## all platforms
+## git configuration
 
 git config --global core.autocrlf false
+git config --global core.excludesFile "~/.gitignore_global"
 
 ### cargo
 cargo install ripgrep
