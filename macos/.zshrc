@@ -8,7 +8,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export PATH=/Users/nporcino/.cargo/bin/:$PATH:/usr/local/bin
+export PATH=/Users/nporcino/.cargo/bin:/Users/nporcino/bin:/usr/bin:$PATH:/usr/local/bin
 
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/nporcino/.oh-my-zsh
@@ -18,7 +18,9 @@ DEFAULT_USER=nporcino
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+#ZSH_THEME="agnoster"
+
+theme.sh flat
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -121,6 +123,7 @@ alias mk='make "$@" 2>&1 | less'
 alias h='history 1 | grep $@'
 alias ll='lsd -al'
 alias ls='lsd'
+alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Xcode"'
 
 #eval "$(starship init zsh)"
 eval `ssh-agent`
