@@ -29,5 +29,24 @@
     file-decoration-style = none
 
 [alias]
-	lol = log --oneline --graph --decorate
-	lola = log --oneline --all --branches --graph --decorate
+    whoami = "!f() { \
+    user_name=$(git config user.name); \
+    user_email=$(git config user.email); \
+    remote_url=$(git remote get-url --push origin 2>/dev/null); \
+    remote_user=$(echo \"$remote_url\" | sed -n 's|git@.*:\\([^/]*\\)/.*|\\1|p'); \
+    protocol=$(echo \"$remote_url\" | grep -q '^git@' && echo 'SSH' || echo 'HTTPS/Other'); \
+    echo \"User: $user_name | Email: $user_email\"; \
+    echo \"Push Remote: $remote_url\"; \
+    echo \"Protocol: $protocol\"; \
+    remote_user_lower=$(echo \"$remote_user\" | tr '[:upper:]' '[:lower:]'); \
+    user_name_lower=$(echo \"$user_name\" | tr '[:upper:]' '[:lower:]'); \
+    if [ \"$remote_user_lower\" = \"$user_name_lower\" ]; then \
+        echo \"✔ Identity matches remote user\"; \
+    else \
+        echo \"⚠ Identity mismatch with remote user: $remote_user\"; \
+    fi; \
+}; f"
+    lol = log --oneline --graph --decorate
+    lola = log --oneline --all --branches --graph --decorate
+    use-meshula = "!git config user.name 'meshula' && git config user.email 'meshula@hotmail.com'"
+    use-pixar = "!git config user.name 'nporcino-pixar' && git config user.email 'nporcino@pixar.com'"
