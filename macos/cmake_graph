@@ -1,0 +1,6 @@
+#!/bin/sh 
+cmake --graphviz=dependencies.dot .
+tred dependencies.dot > dependencies_reduced.dot
+dot -Tpng dependencies_reduced.dot -o dependencies_reduced.png
+echo "to view the graph, run the following command:"
+echo "open dependencies_reduced.png" 
