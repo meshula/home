@@ -1,0 +1,9 @@
+{
+    "zig_exe_path": "/Users/nporcino/miniconda3/envs/sdev/bin/zig",
+    "warn_style": false,
+    "enable_semantic_tokens": true,
+    "enable_inlay_hints": true,
+    "enable_autofix": false,
+    "enable_build_on_save": true,
+    "build_on_save_step": "check"
+}

@@ -20,7 +20,30 @@ cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
 ## mac
 
-copy the dot files
+Link dotfiles
+```bash
+mv ~/.zshrc ~/.zshrc/old
+ln -s macos/zshrc_volatile ~/.zshrc
+```
+
+### conda
+
+* install miniconda: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+* create an `sdev` conda env and do some basic setup:
+```bash
+conda create -n sdev
+conda activate sdev
+conda config --add channels conda-forge
+conda install nvim tmux cmake git git-lfs tree htop python pip ipython ipdb \
+ripgrep the_silver_searcher
+
+# LSPs
+conda install pyright dnachun::lua-language-server
+
+# install tpm (tmux package manager)
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
 
 #### git_config.sh
 Run once. Adds git alias lol and lola which will print a concise change history

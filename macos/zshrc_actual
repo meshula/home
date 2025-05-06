@@ -1,12 +1,4 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
-
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 export PATH=/Users/nporcino/.cargo/bin:/Users/nporcino/bin:/usr/bin:$PATH:/usr/local/bin
 
@@ -21,6 +13,14 @@ DEFAULT_USER=nporcino
 #ZSH_THEME="agnoster"
 
 theme.sh flat
+
+
+# Always boot up tmux if not already running and in WSL
+if [[ -v WSL_DISTRO_NAME ]]; then
+    export OS_WINDOWS=1
+fi
+
+
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -98,14 +98,17 @@ zle -N zle-line-init
 ##############################################################################
 # History Configuration
 ##############################################################################
-HISTSIZE=5000               #How many lines of history to keep in memory
-HISTFILE=~/.zsh_history     #Where to save history to disk
-SAVEHIST=5000               #Number of history entries to save to disk
+# @{ history settings
+export HISTSIZE=1000000               #How many lines of history to keep in memory
+export HISTFILE=~/.zsh_history     #Where to save history to disk
+export SAVEHIST=1000000               #Number of history entries to save to disk
+export HISTFILESIZE=10000000
 #HISTDUP=erase               #Erase duplicates in the history file
 setopt    appendhistory     #Append history to the history file (no overwriting)
 setopt    sharehistory      #Share history across terminals
 setopt    incappendhistory  #Immediately append to the history file, not just when a term is killed
-
+set histignorespace true
+# @}
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
