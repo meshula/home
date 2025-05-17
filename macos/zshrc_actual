@@ -1,7 +1,5 @@
 
 
-export PATH=/Users/nporcino/.cargo/bin:/Users/nporcino/bin:/usr/bin:$PATH:/usr/local/bin
-
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/nporcino/.oh-my-zsh
 
@@ -12,15 +10,107 @@ DEFAULT_USER=nporcino
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="agnoster"
 
-theme.sh flat
+# theme.sh flat
 
-
-# Always boot up tmux if not already running and in WSL
+# determine current operating system & local build directories
+#################################################################
 if [[ -v WSL_DISTRO_NAME ]]; then
     export OS_WINDOWS=1
 fi
 
+export SW_ROOT_EXTERNAL_base="${HOME}/sw.external"
+export OS=`uname`
+if [[ -v OS_WINDOWS ]]; then 
+    export OS="WSL"
+fi
 
+# Set up the operating system
+case $OS in
+    "Darwin" )
+        # the first cut results in 10.6.1 and the second cut removes
+        # the `.1' to wind up with 10.6.1
+        export OS_VERSION=`sw_vers | grep ProductVersion | grep -Eo '[0-9][0-9]\.[0-9]'`; 
+        ;;
+    "WSL" )
+        export WORKSPACE=${HOME}/workspace
+        export OS_VERSION="x86_64";
+        ;;
+    "Linux" )
+        export OS_VERSION="x86_64";
+        ;;
+    "Default" )
+        export OS_VERSION="DEFAULT";
+        echo "warning: couldn't find a OS for you...";
+        ;;
+esac
+
+# SYSTEM VARIABLES
+export OS_SUFFIX="${OS}/${OS_VERSION}"
+export PREFIX="${SW_ROOT_EXTERNAL_base}/${OS_SUFFIX}"
+export PYTHON_VERSION=`python --version 2>&1 | cut -f 2 -d ' ' | cut -f -2 -d '.'`
+export PYTHONSTARTUP="${HOME}/workspace/dotfiles/.pystartup"
+
+# Set OS specific variables.
+case $OS in
+    "Darwin" )
+        export JOBS=10;
+
+        # l seems to have some platform dependent quirks
+        alias l='ls -lGh'   # list with prettyness
+
+        export CXX='clang++'
+        export CC='clang'
+
+        # make sure that the backspace is sent through correctly
+        # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\\177/' > /var/tmp/$TERM.ti
+        # tic /var/tmp/$TERM.ti
+        # rm /var/tmp/$TERM.ti
+
+        export PATH="/Users/nporcino/.cargo/bin:/Users/nporcino/bin:/usr/bin:$PATH:/usr/local/bin"
+        export PATH="$HOME/miniconda3/bin:$PATH"
+
+        source "$HOME/miniconda/bin/activate"
+        ;;
+
+    "Linux" )
+        # going to assume 64 bit for now
+        export JOBS=9;
+        alias l='ls -lGh --color=auto'  # list with prettyness
+        alias w_ubuntu='cat /etc/issue'
+        export VIMFONT="Monospace" # set the vim font
+        alias wsteam='wine ~/.wine/drive_c/Program\ Files/Steam/Steam.exe'
+        ;;
+
+    "WSL")
+        export BLDDIR=/var/tmp/build
+        alias l='ls -lGh --color=auto'  # list with prettyness
+        alias gitk='gitk.exe --all' # use the windows gitk in `--all` mode
+        
+        # @TODO: probably better to use ${USER} for stephan/steinbach to make
+        #        it more uniform from machine to machine
+        alias wh='pushd /mnt/c/Users/${USER}/'
+        export WINHOME='/mnt/c/Users/${USER}/'
+
+        export PATH=${PATH}:/home/${USER}/.local/bin
+
+        # Make sure that the ssh-agent is running for WSL
+        if [ $(ps ax | grep "[s]sh-agent" | wc -l) -eq 0 ] ; then
+            eval $(ssh-agent -s) > /dev/null
+            if [ "$(ssh-add -l)" = "The agent has no identities." ] ; then
+                # Auto-add ssh keys to your ssh agent
+                # Example:
+                ssh-add ~/.ssh/id_rsa #> /dev/null 2>&1
+            fi
+        fi
+
+        # so that we use the faster git system install from windows
+        # export GIT_EXEC_PATH="/mnt/c/Users/steinbach/AppData/Local/Programs/Git/cmd"
+        ;;
+
+    "Default" )
+        export OS_VERSION="DEFAULT"
+        echo "warning: couldn't find a OS for you..."
+esac
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -124,8 +214,8 @@ set histignorespace true
 
 alias mk='make "$@" 2>&1 | less'
 alias h='history 1 | grep $@'
-alias ll='lsd -al'
-alias ls='lsd'
+# alias ll='lsd -al'
+# alias ls='lsd'
 alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Xcode"'
 
 #eval "$(starship init zsh)"
@@ -133,6 +223,6 @@ eval `ssh-agent`
 autoload -U +X bashcompinit && bashcompinit
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme 2>/dev/null || echo "Powerlevel10k theme not found"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

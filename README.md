@@ -24,6 +24,10 @@ Link dotfiles
 ```bash
 mv ~/.zshrc ~/.zshrc/old
 ln -s macos/zshrc_volatile ~/.zshrc
+mkdir -p ~/.config/nvim
+ln -s macos/config.nvim.lua ~/.config/nvim/lua
+ln -s ~/config/nvim/lua/init.lua ~/.config/nvim/init.lua
+ln -s macos/zls.json ~/Library/Application\ Support/zls.json
 ```
 
 ### conda
