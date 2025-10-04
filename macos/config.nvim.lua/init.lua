@@ -49,13 +49,17 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- load my plugins into lazy
-require("lazy").setup("plugins")
+require('lazy').setup('plugins')
+
+require('lsp')
 
 -- keyboard mappings
 require('mappings')
 
 -- plugin configuration
 require('plugin_config')
+
+vim.cmd.colorscheme('nightfox')
 
 -- @{ look/color scheme stuff
 -- horizontal line under the cursor and 80 character colum
@@ -66,7 +70,7 @@ vim.opt.colorcolumn = "80"
 vim.opt.termguicolors = true
 
 -- set a different colorscheme in ssh mode
-function detect_ssh()
+local function detect_ssh()
 	local str = vim.env.SSH_CLIENT
 	if (str ~= nil) then
 		str = str:gsub("%s+", "")
@@ -100,21 +104,6 @@ vim.api.nvim_create_autocmd(
 vim.opt.number = true
 vim.opt.relativenumber = true
 
--- toggle line numbering
-function toggle_number()
-    vim.opt.number = not vim.o.number
-    vim.opt.relativenumber = not vim.o.relativenumber
-end
-vim.keymap.set(
-    "n",
-    "<Leader>N",
-    function()
-        toggle_number()
-    end,
-    {noremap=true}
-)
--- @}
-
 -- @{ undo
 vim.opt.undofile = true
 -- @}
@@ -132,15 +121,11 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 -- @}
 
--- @{ directory
 -- when opening a file, cd to its directory
 vim.opt.autochdir = true
--- @}
 
--- @{
 -- faster update time makes all the async stuff more responsive
 vim.opt.updatetime = 100
--- @}
 
 -- @{ Markdown
 vim.g.markdown_recommended_style = 0
@@ -181,7 +166,7 @@ vim.opt.scrolloff = 3
 -- @}
 
 -- @{ the parameters of the "shada" file, which is partly responsible for 
---    :oldfiles, which I use with telescope...
+--    :oldfiles, which I use with recent file picker...
 vim.opt.shada = "!,'5000,<100,s100,h"
 -- @}
 
@@ -195,80 +180,6 @@ vim.g.python_indent = {
 -- so that the sign coloumn (left of the numbers) doesn't ocnstantly appear and 
 -- disapear as bugs come and go
 vim.opt.signcolumn = "yes"
-
--- LSP config @{
-vim.lsp.inlay_hint.enable()
-vim.keymap.set(
-    "n",
-    "gd",
-    vim.lsp.buf.definition,
-    { desc = "jump to definition" }
-)
-vim.keymap.set(
-    "n",
-    "<Leader>n",
-    vim.lsp.buf.rename,
-    { desc = "rename the symbol under the cursor using the lsp" }
-)
-vim.diagnostic.config(
-    {
-        -- virtual_lines = { current_line = false, },
-        virtual_lines = false,
-        virtual_text = true,
-        underline = true,
-        signs = true,
-        -- float = { cursor = true },
-        float = {
-            border = 'rounded',
-            focusable = true, -- for copy-paste
-            severity_sort = true,
-            -- format = function(diagnostic)
-            --     return string.format('%s [%s]', diagnostic.message, diagnostic.source)
-            -- end,
-        },
-        update_in_insert = true,
-        jump = {
-            float = true,
-        },
-    }
-)
-
--- diagnostic on hover
-vim.api.nvim_create_autocmd(
-    { "CursorHold" },
-    {
-        pattern = "*",
-        callback = function()
-            for _, winid in pairs(vim.api.nvim_tabpage_list_wins(0)) do
-                if vim.api.nvim_win_get_config(winid).zindex then
-                    return
-                end
-            end
-            vim.diagnostic.open_float(
-                {
-                    scope = "cursor",
-                    focusable = false,
-                    close_events = {
-                        "CursorMoved",
-                        "CursorMovedI",
-                        "BufHidden",
-                        "InsertCharPre",
-                        "WinLeave",
-                    },
-                }
-            )
-        end
-    }
-)
-
--- swap header/impl
-vim.keymap.set(
-    "n",
-    "<Leader>k",
-    vim.cmd.ClangdSwitchSourceHeader,
-    { desc = "swap buffer between source and header"}
-)
--- @}
 
 -- @{ highlight on yank
 vim.api.nvim_create_autocmd(

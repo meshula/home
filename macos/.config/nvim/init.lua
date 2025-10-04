@@ -1,261 +1,193 @@
+-- stephan steinbach's init.lua file
+-- ...based on my vimrc file, translated in ~2020 to lua
+-- ...which is based on Günter Steinbach's vimrc, copied originally in ~2001
+-- ...who knows how his old his vimrc was though
+-- ----------------------------------------------------------------------------
 
-local vim = vim
-local api = vim.api
-local fn = vim.fn
--- user interface
-vim.cmd([[set mouse=a]])
+-- check the neovim version
+local nvim_version = "0.11"
+if (vim.fn.has('nvim-' .. nvim_version) ~= 1) then
+    local version = vim.version()
+    print(
+        "insufficient neovim version, expected: " .. nvim_version
+        .. " got: "
+        .. version.major .. "." .. version.minor .. "." .. version.patch
+    )
+end
+
+-- Spacebar as Leader
 vim.g.mapleader = " "
-vim.g.completion_enable_auto_popus = 1
-vim.g.neovide_cursor_vfx_mode = "railgun"
---vim.o.guifont = "FantasqueSansMono Nerd Font Mono:h15"
-vim.g.zig_fmt_autosave = 0
 
--- window options
-vim.wo.relativenumber = false
-vim.wo.number = true
-vim.wo.colorcolumn = "80"
-
--- undo
-vim.cmd([[set undofile]])
-
--- edit
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
-vim.o.smarttab = true
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.expandtab = true
-vim.o.clipboard = "unnamedplus"
-
-vim.g.airline_powerline_fonts = 1
-
--- plugins
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-print(install_path)
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-end
-
---  _                    _   ____  _             _           
--- | |    ___   __ _  __| | |  _ \| |_   _  __ _(_)_ __  ___ 
--- | |   / _ \ / _` |/ _` | | |_) | | | | |/ _` | | '_ \/ __|
--- | |__| (_) | (_| | (_| | |  __/| | |_| | (_| | | | | \__ \
--- |_____\___/ \__,_|\__,_| |_|   |_|\__,_|\__, |_|_| |_|___/
---                                          |__/
-require('packer').startup(function(use)
-  -- git
-  use "tpope/vim-fugitive"
-  use "mhinz/vim-signify"
-  
-  -- user interface
-  -- use "morhetz/gruvbox"
-  use "ryanoasis/vim-devicons"
-  use "vim-airline/vim-airline"
-  use "vim-airline/vim-airline-themes"
-  use "mhartington/oceanic-next"
-  -- use "DanilaMihailov/beacon.nvim"
-  use "junegunn/vim-peekaboo"
-
-  -- language support
-  use "neovim/nvim-lspconfig"
-  -- use { "autozimu/LanguageClient-neovim", branch="next", run = "bash install.sh" }
-  use { "neoclide/coc.nvim", branch="release" }
-  use "nvim-treesitter/nvim-treesitter"
-  use "ziglang/zig.vim"
-  use "tikhomirov/vim-glsl"
-
-  -- use "quadplay/vim-pyxlscript-syntax"
-  
-  -- editor
-  use {
-    'numToStr/Comment.nvim',
-    config = function() 
-        require('Comment').setup({
-            mappings = { basic = true },
-            toggler = { line = 'gcc', block = 'gcC' },
-            opleader = { line = 'gcc', block = 'gcC' }
-        }) 
-    end
-  }
-
-  use {
-	"pavanbhat1999/figlet.nvim",
-    requires = "numToStr/Comment.nvim",
-  }
-
-  -- file browser
-  use {
-    'kyazdani42/nvim-tree.lua',
-    requires = {
-      'kyazdani42/nvim-web-devicons', -- optional, for file icon
-    },
-    config = function() require'nvim-tree'.setup {} end
-  }
-  use {
-      'nvim-telescope/telescope.nvim',
-      requires = { {'nvim-lua/plenary.nvim'} }
-  }
-  
-  -- after all the plugins are requested, sync
-  if packer_bootstrap then
-    require('packer').sync()
-  end    
-end)
-
-vim.g.coc_global_extensions = {
-    'coc-json',
-    'coc-cmake',
-    'coc-clangd',
-    'coc-git',
-    'coc-glslx',
-    'coc-markdownlint',
-    'coc-yank',
-    'coc-yaml',
-    'coc-zls', 
-    '@yaegassy/coc-pylsp',
-    'coc-clangd',
-}
-
-local map = vim.api.nvim_set_keymap
-api.nvim_set_keymap("n", "<leader>zsh", ":e term://zsh | normal i<CR>", {noremap=true})
---api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
-
-api.nvim_set_keymap("n", "<leader>v", ":vsplit<CR>", {noremap=true})
-api.nvim_set_keymap("n", "<leader>h", ":split<CR>", {noremap=true})
-
-api.nvim_set_keymap("n", "<leader>ls", ":NvimTreeOpen<CR>", {noremap=true})
-
-api.nvim_set_keymap("n", "<leader>init", ":e ~/.config/nvim/init.lua<CR>", {noremap=true})
-
--- @{ zig
-vim.g.LanguageClient_serverCommands = { ['zig'] = {'/Users/nporcino/bin/zls'} }
-vim.g.zig_fmt_autosave = 0
--- @]
-
-if false then
-    map("n", "<leader>d", "<cmd>lua vim.lsp.buf.definition()<CR>", {noremap=true})
-    map("n", "<leader>i", "<cmd>lua vim.lsp.buf.implementation()<CR>", {noremap=true})
-    api.nvim_set_keymap("n", "K", 
-      ':call LanguageClient#textDocument_hover()<CR>',  
-      {noremap = true, silent = true})
-    api.nvim_set_keymap("n", "gd", 
-      ':call LanguageClient#textDocument_definition()<CR>', 
-      {noremap = true, silent = true})
-    api.nvim_set_keymap("n", "<F2>", 
-      ':call LanguageClient#textDocument_rename()<CR>',  
-      {noremap = true, silent = true})
-end
-
-vim.api.nvim_set_keymap(
-    "n",
-    "K",
-    "<cmd>lua show_documentation()<cr>",
-    {noremap=1, silent=1}
-)
-function show_documentation()
-    local filetype = vim.bo.filetype
-    if filetype == "vim" or filetype == "help" then
-        vim.cmd("h " .. vim.fn.expand("<cword>"))
-    elseif vim.fn["coc#rpc#ready"]() then
-        vim.fn.CocActionAsync("doHover")
-    else
-        vim.cmd(
-        "!" .. vim.bo.keywordprg .. " " .. vim.fn.expand("<cword>")
-        )
-    end
-end
-
-vim.api.nvim_set_keymap("n",
-    "gD", "<cmd>call CocActionAsync('jumpDefinition')<cr>",
-    {noremap=1, silent=1}
-)    
-
-
--- each of these are documented in `:help nvim-tree.OPTION_NAME`
-require'nvim-tree'.setup {
-  disable_netrw        = false,
-  hijack_netrw         = true,
-  open_on_setup        = false,
-  ignore_ft_on_setup   = {},
-  auto_close           = false,
-  auto_reload_on_write = true,
-  open_on_tab          = false,
-  hijack_cursor        = false,
-  update_cwd           = false,
-  hijack_unnamed_buffer_when_opening = false,
-  hijack_directories   = {
-    enable = true,
-    auto_open = true,
-  },
-  diagnostics = {
-    enable = false,
-    icons = {
-      hint = "",
-      info = "",
-      warning = "",
-      error = "",
-    }
-  },
-  update_focused_file = {
-    enable      = false,
-    update_cwd  = false,
-    ignore_list = {}
-  },
-  system_open = {
-    cmd  = nil,
-    args = {}
-  },
-  filters = {
-    dotfiles = false,
-    custom = {}
-  },
-  git = {
-    enable = true,
-    ignore = true,
-    timeout = 500,
-  },
-  view = {
-    width = 30,
-    height = 30,
-    hide_root_folder = false,
-    side = 'left',
-    auto_resize = false,
-    mappings = {
-      custom_only = false,
-      list = {}
-    },
-    number = false,
-    relativenumber = false,
-    signcolumn = "yes"
-  },
-  trash = {
-    cmd = "trash",
-    require_confirm = true
-  },
-  actions = {
-    change_dir = {
-      global = false,
-    },
-    open_file = {
-      quit_on_open = false,
-      window_picker = {
-        enable = true,
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-        exclude = {
-          filetype = {
-            "notify",
-            "packer",
-            "qf"
-          }
-        }
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system(
+      {
+          "git",
+          "clone",
+          "--filter=blob:none",
+          "--branch=stable",
+          lazyrepo,
+          lazypath
       }
+  )
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo(
+    {
+          { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+          { out, "WarningMsg" },
+          { "\nPress any key to exit..." },
+        },
+        true,
+        {}
+    )
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- load my plugins into lazy
+require('lazy').setup('plugins')
+
+require('lsp')
+
+-- keyboard mappings
+require('mappings')
+
+-- plugin configuration
+require('plugin_config')
+
+vim.cmd.colorscheme('nightfox')
+
+-- @{ look/color scheme stuff
+-- horizontal line under the cursor and 80 character colum
+vim.opt.cursorline = true
+vim.opt.colorcolumn = "80"
+
+-- program language syntax on
+vim.opt.termguicolors = true
+
+-- set a different colorscheme in ssh mode
+local function detect_ssh()
+	local str = vim.env.SSH_CLIENT
+	if (str ~= nil) then
+		str = str:gsub("%s+", "")
+		str = string.gsub(str, "%s+", "")
+
+		if (str ~= "") then
+			vim.cmd.colorscheme('duskfox')
+		end
+	end
+end
+detect_ssh()
+
+-- toggle line numbers between absolute and relative
+vim.api.nvim_create_autocmd(
+    "InsertEnter",
+    {
+        callback = function()
+            vim.opt.relativenumber = false
+        end,
     }
-  }
+)
+vim.api.nvim_create_autocmd(
+    "InsertLeave",
+    {
+        callback = function()
+            vim.opt.relativenumber = true
+        end,
+    }
+)
+
+vim.opt.number = true
+vim.opt.relativenumber = true
+
+-- @{ undo
+vim.opt.undofile = true
+-- @}
+
+-- @{ tabs
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+-- @}
+
+-- @{ search
+-- when searching, ignore casing
+vim.opt.ignorecase = true
+-- ...unless an upper case letter is present, then DO be case sensitive
+vim.opt.smartcase = true
+-- @}
+
+-- when opening a file, cd to its directory
+vim.opt.autochdir = true
+
+-- faster update time makes all the async stuff more responsive
+vim.opt.updatetime = 100
+
+-- @{ Markdown
+vim.g.markdown_recommended_style = 0
+-- @}
+
+-- @{ custom filetype mappings
+vim.api.nvim_create_autocmd(
+    { "BufNewFile", "BufRead"},
+    {
+        pattern = "*.md.html",
+        callback = function()
+            vim.api.bo.filetype = "markdown"
+        end,
+    }
+)
+vim.api.nvim_create_autocmd(
+    { "BufNewFile", "BufRead"},
+    {
+        pattern = "*.otio",
+        callback = function()
+            vim.api.bo.filetype = "json"
+        end,
+    }
+)
+vim.api.nvim_create_autocmd(
+    { "BufNewFile", "BufRead"},
+    {
+        pattern = "*.wgsl",
+        callback = function()
+            vim.bo.filetype = "wgsl"
+        end,
+    }
+)
+-- @}
+
+-- @{ moving around, how many lines to keep at the top or bottom of the screen
+vim.opt.scrolloff = 3
+-- @}
+
+-- @{ the parameters of the "shada" file, which is partly responsible for 
+--    :oldfiles, which I use with recent file picker...
+vim.opt.shada = "!,'5000,<100,s100,h"
+-- @}
+
+-- @{
+-- python indentation preference
+vim.g.python_indent = {
+    closed_paren_align_last_line = true
 }
+-- @}
 
-require("figlet").Config({font="standard"})
--- require("figlet").Config({font="small"})
+-- so that the sign coloumn (left of the numbers) doesn't ocnstantly appear and 
+-- disapear as bugs come and go
+vim.opt.signcolumn = "yes"
 
-
-api.nvim_command [[colorscheme OceanicNext]]
-
+-- @{ highlight on yank
+vim.api.nvim_create_autocmd(
+    "TextYankPost",
+    {
+        callback = function()
+            vim.highlight.on_yank({ timeout = 333 })
+        end,
+    }
+)
+-- @}

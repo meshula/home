@@ -1,3 +1,7 @@
+-- which-key makes a nice view to show what hotkeys are mapped to commands
+local wk = require("which-key")
+wk.add({ {"<Leader>w", vim.cmd.WhichKey, desc="Open Which-Key" }})
+
 -- @{ lualine
 require('lualine').setup {
   options = {
@@ -31,6 +35,14 @@ require('lualine').setup {
 -- @}
 
 -- @{ fugitive
+-- establish "g" as the prefix for git commands
+wk.add( { {"<leader>g", group="git" } })
+vim.keymap.set(
+    "n",
+    "<Leader>gd",
+    vim.cmd.Gdiff,
+    {desc = "open git diff for the current buffer"}
+)
 vim.keymap.set(
     "n",
     "<Leader>gs",
@@ -64,67 +76,43 @@ vim.keymap.set(
 )
 -- @}
 
--- @{ Telescope
-require("telescope").setup {
-  defaults = {
-      path_display={"smart"},
-  },
-  extensions = {
-    file_browser = {
-      -- disables netrw and use telescope-file-browser in its place
-      hijack_netrw = false,
-    },
-  },
-}
-
+-- @{ Picker system (Currently: snacks.picker)
 -- old files (most commonly used)
 function MRU_Func()
     -- this ensures that oldfiles is up to date, if another vim session has
     -- written to it since the last time this one looked.
     -- vim.cmd([[:rshada]])
-    -- was using frecency... but I think oldfiles might just be a better fit
-    -- vim.cmd.Telescope("oldfiles")
-    require('telescope').extensions['recent_files'].pick()
+    Snacks.picker.recent()
 end
 vim.keymap.set(
     "n",
     "<Leader>r",
     MRU_Func,
-    {noremap=true, desc="open recent file picker in telescope"}
+    {noremap=true, desc="open recent file picker"}
 )
 -- resume the last search
 vim.keymap.set(
     "n",
     "<Leader>R",
     function()
-        vim.cmd.Telescope("resume")
+        ---@module 'snacks'
+        Snacks.picker.resume()
     end,
-    {noremap=true, desc="open last telescope search"}
+    {noremap=true, desc="[R]esume last picker"}
 )
 -- local files
 function FindFiles_Func(search_from_project_root)
-    local builtin = require("telescope.builtin")
-    local utils = require("telescope.utils")
-
-    local root = utils.buffer_dir()
-
     if (search_from_project_root) then
-        root = string.gsub(vim.fn.system(
-        "git rev-parse --show-toplevel"),
-        "\n",
-        ""
-        )
-        if vim.v.shell_error == 1 then
-            root = "."
-        end
+        local root = Snacks.git.get_root()
+        return Snacks.picker.files({cwd = root })
     end
-    builtin.find_files({cwd = root})
+    Snacks.picker.files()
 end
 vim.keymap.set(
     "n",
     "<Leader>.",
     FindFiles_Func,
-    {noremap=true, desc="open filename search from CWD in telescope"}
+    {noremap=true, desc="open filename search from CWD in picker"}
 )
 vim.keymap.set(
     "n",
@@ -132,46 +120,69 @@ vim.keymap.set(
     function()
         FindFiles_Func(true)
     end,
-    {noremap=true, desc="open filename search from project root w/ telescope"}
+    {noremap=true, desc="open filename search from project root w/ picker"}
 )
 
 vim.keymap.set(
     "n",
-    "<Leader>d",
+    "<Leader>D",
     function()
-        vim.cmd.Telescope("diagnostics")
+        Snacks.picker.diagnostics()
     end,
-    {noremap=true, desc="open diagnostics"}
+    {noremap=true, desc="open diagnostics in picker"}
+)
+wk.add({ "<leader>t", icon="", group="LSP Symbol Outliners" })
+vim.keymap.set(
+    "n",
+    "<Leader>tt",
+    function()
+        Snacks.picker.lsp_symbols()
+    end,
+    {noremap=true, desc="open document symbols in picker (Outline)"}
+)
+wk.add({ {"<leader>j", icon="", group="jump with lsp"}})
+vim.keymap.set(
+    "n",
+    "<Leader>jr",
+    function()
+        Snacks.picker.lsp_references()
+    end,
+    {noremap=true, desc="open references to symbol in picker"}
 )
 vim.keymap.set(
     "n",
-    "<Leader>t",
+    "<Leader>p",
     function()
-        vim.cmd.Telescope("lsp_document_symbols")
+       Snacks.picker()
     end,
-    {noremap=true, desc="open outline view"}
+    {noremap=true, desc="Open Snacks.picker list"}
 )
-vim.keymap.set(
-    "n",
-    "<Leader>G",
-    function()
-        vim.cmd.Telescope("git_files")
-    end,
-    {noremap=true, desc="git files search"}
-)
-function TeleBuffers()
-    local builtin = require("telescope.builtin")
-    builtin.buffers({sort_mru=true})
-end
 vim.keymap.set(
     "n",
     "<Leader>B",
-    TeleBuffers,
-    {noremap=true, desc="open buffers in telescope"}
+    function()
+	    Snacks.picker.buffers()
+    end,
+    {noremap=true, desc="open buffers in picker"}
+)
+wk.add({ "<leader>w", icon="󰍍", group="Keymap Information" })
+vim.keymap.set(
+    "n",
+    -- W so that leader>w opens which key and W opens picker 
+    -- (good for searching) -- I've found they have different uses
+    "<Leader>wW",
+    Snacks.picker.keymaps,
+    {noremap=true, desc="open keymappings in picker"}
+)
+vim.keymap.set(
+    "n",
+    "<Leader>ww",
+    function() vim.cmd.WhichKey() end,
+    {noremap=true, desc="open keymappings in WhichKey"}
 )
 
 -- @{ treesitter
-require'nvim-treesitter.configs'.setup {
+require('nvim-treesitter.configs').setup {
     ensure_installed = {"wgsl"},
     indent = {
         -- excited about this for the future, but for now, it seems to make 8 
@@ -181,37 +192,33 @@ require'nvim-treesitter.configs'.setup {
 }
 -- @}
 
--- marks
-vim.keymap.set(
-    "n",
-    "<Leader>m",
-    function()
-        vim.cmd.Telescope("marks")
-    end,
-    {noremap=true, desc="open marks in telescope"}
-)
-
 -- @{ search in the quadplay manual
 function QuadplayManualLookup()
     local search_phrase = '^`' .. vim.fn.expand('<cword>') .. '(.*)`$'
     local manual_page = vim.fn.expand(
         "~/Documents/workspace/quadplay/doc/manual.md.html"
     )
-    require('telescope.builtin').grep_string(
+    Snacks.picker.grep_word(
         {
-            search=search_phrase,
-            search_dirs={manual_page},
-            use_regex=true,
-            path_display="hidden",
-            initial_mode="normal",
+            dirs = {manual_page},
         }
     )
+
+--  require('telescope.builtin').grep_string(
+--      {
+--          search=search_phrase,
+--          search_dirs={manual_page},
+--          use_regex=true,
+--          path_display="hidden",
+--          initial_mode="normal",
+--      }
+--  )
 end
 vim.keymap.set(
     'n',
     '<Leader>M',
     QuadplayManualLookup,
-    {noremap=true, desc="look up word in quadplay manual"}
+    {noremap=true, desc="open quadplay manual in picker and look up word"}
 )
 -- @}
 
@@ -219,62 +226,34 @@ vim.keymap.set(
 vim.keymap.set(
     "n",
     "<Leader>S",
-    function()
-        vim.cmd.Telescope("grep_string")
-    end,
+    Snacks.picker.grep_word,
     {noremap=true, desc="Search for the word under the cursor in files"}
 )
 -- search for any word in local files
-function FindString_Func(search_project)
+function FindString_Func(search_from_project_root)
     local root = "."
-    if (search_project) then
-        root = string.gsub(vim.fn.system(
-        "git rev-parse --show-toplevel"),
-        "\n",
-        ""
-        )
-        if vim.v.shell_error == 1 then
-            root = "."
-        end
+    if (search_from_project_root) then
+        root = Snacks.git.get_root()
     end
-    require('telescope.builtin').live_grep(
-        {
-            cwd=root,
-        }
-    )
+    Snacks.picker.grep({cwd = root})
 end
 vim.keymap.set(
     "n",
-    "<Leader>/",
+    "<Leader>;",
     FindString_Func,
-    {noremap=true, desc="start an interactive string search" }
+    {noremap=true, desc="interactive string search picker" }
 )
 vim.keymap.set(
     "n",
-    "<Leader>;",
+    "<Leader>/",
     function()
-        FindFiles_Func(true)
+        FindString_Func(true)
     end,
     {
         noremap=true,
-        desc="start an interactive string search rooted at the project root",
+        desc="interactive string search rooted at the project root picker",
     }
 )
-
-require('telescope').setup{
-	defaults = {
-        layout_strategy="flex",
-		mappings = {
-			i = {
-				["<C-j>"] = require('telescope.actions').move_selection_next,
-				["<C-k>"] = require('telescope.actions').move_selection_previous,
-                ["<C-h>"] = "which_key"
-			}
-		},
-        path_display = { "truncate", },
-	},
-}
--- @}
 
 -- @{ treesitter
 require('nvim-treesitter.configs').setup {
@@ -315,57 +294,13 @@ vim.api.nvim_create_autocmd(
         end
     }
 )
+wk.add({"<Leader>c", group="toggle comment"})
 vim.keymap.set(
     { "n", "v" },
-    "<Leader>c",
+    "<Leader>cc",
     "gc",
     { desc = "toggle comment", remap = true }
 )
--- @}
-
--- @{  LSP Configurations (define LSPs using lspconfig plugin) 
---     LSP programs themselves need to be externally installed/managed (IE 
---     through conda)
-require('lspconfig').pyright.setup{}
-require('lspconfig').zls.setup{}
-require('lspconfig').clangd.setup{}
-require('lspconfig').lua_ls.setup {
-  on_init = function(client)
-    if client.workspace_folders then
-      local path = client.workspace_folders[1].name
-      if (
-          path ~= vim.fn.stdpath('config')
-          and (vim.loop.fs_stat(path..'/.luarc.json')
-          or vim.loop.fs_stat(path..'/.luarc.jsonc'))
-      ) then
-        return
-      end
-    end
-
-    client.config.settings.Lua = vim.tbl_deep_extend(
-        'force',
-        client.config.settings.Lua,
-        {
-            runtime = {
-                -- Tell the language server which version of Lua you're using
-                -- (most likely LuaJIT in the case of Neovim)
-                version = 'LuaJIT'
-            },
-            -- Make the server aware of Neovim runtime files
-            workspace = {
-                checkThirdParty = false,
-                library = {
-                    vim.env.VIMRUNTIME,
-                    "${3rd}/luv/library",
-                }
-            }
-        }
-    )
-  end,
-  settings = {
-    Lua = { telemetry = false },
-  }
-}
 -- @}
 
 
@@ -392,28 +327,291 @@ vim.api.nvim_create_autocmd(
     }
 )
 
--- open telescope quickfix and close cmake on build fail
-function on_cmake_fail()
-    vim.cmd.CMakeClose()
-    vim.cmd.Telescope("quickfix")
-end
+-- open picker for quickfix and close cmake on build fail
 local cmake_build_fail_grp = vim.api.nvim_create_augroup("cmake_build_fail", {})
 vim.api.nvim_create_autocmd(
     "User",
     {
         pattern = "CMakeBuildFailed",
-        callback = on_cmake_fail,
+        callback = function()
+            vim.cmd.CMakeClose()
+            Snacks.picker.qflist()
+        end,
         group = cmake_build_fail_grp,
     }
 )
 -- @}
 
--- @{ Markview
-require("markview").setup(
+-- @{ dap
+local dap = require("dap")
+dap.set_log_level('DEBUG')
+
+dap.adapters.lldb = {
+	type = "executable",
+	command = "/Users/stephan/opt/miniconda3/envs/sdev/bin/lldb-dap",
+	name = "lldb",
+}
+
+-- local pickers = require("telescope.pickers")
+-- local finders = require("telescope.finders")
+-- local conf = require("telescope.config").values
+-- local actions = require("telescope.actions")
+-- local action_state = require("telescope.actions.state")
+
+-- launch a "fire and forget" coroutine as described in the blog post above
+-- coroutine.resume(
+--     coroutine.create(
+--         function()
+--             local first = M.pick_file({
+--                 { text = "Yes, launch missiles 🚀", display = "Yes, launch missiles 🚀" },
+--                 { text = "No, don't launch missiles", display = "No, don't launch missiles" },
+--             })
+--             if not first or vim.startswith(first.text, "No") then
+--                 return
+--             end
+--
+--             local second = M.pick_sync({
+--                 { text = "Really?", display = "Really?" },
+--                 { text = "Actually, wait, no", display = "Actually, wait, no" },
+--             })
+--             if not second or vim.startswith(second.text, "Actually, wait") then
+--                 return
+--             end
+--
+--             print("Ok, launching missiles! 🚀")
+--         end
+--     )
+-- )
+--
+-- function pick_file()
+--     local selected = nil
+--
+--     coroutine.resume(
+--         coroutine.create(
+--             function()
+--                 local co = coroutine.running()
+--
+--                 require("snacks").picker.pick(
+--                     'files',
+--                     {
+--                         title = "Executable to Debug",
+--                         layout = "select",
+--                         confirm = function(picker, item)
+--                             picker:close()
+--                             selected = item
+--                             if coroutine.status(co) ~= "running" then
+--                                 coroutine.resume(co)
+--                             end
+--                         end,
+--                     }
+--                 )
+--
+--                 if not selected then coroutine.yield() end
+--                 return selected
+--             end
+--         )
+--     )
+-- end
+
+function pick_file()
+  local co = coroutine.running()
+  local selected = nil
+
+  local Path = require("plenary.path")
+  local cwd = Snacks.git.get_root()
+
+  require("snacks").picker.pick(
+      "files",
+      {
+          cwd = cwd,
+          args = {"--type", "x"},
+          hidden = true,
+          ignored = true,
+          title = "Pick executable to debug",
+          layout = "select",
+          confirm = function(picker, item)
+              picker:close()
+              selected = Path:new(item.text):absolute(cwd)
+              if coroutine.status(co) ~= "running" then
+                  coroutine.resume(co)
+              end
+          end,
+      }
+  )
+
+  if not selected then
+      coroutine.yield()
+  end
+
+  return selected
+end
+
+dap.configurations.cpp = {
     {
-        preview = {
-            icon_provider = "devicons", -- "mini" or "devicons"
-        }
+        name = "Launch an executable",
+        type = "lldb",
+        request = "launch",
+        cwd = "${workspaceFolder}",
+        program = pick_file,
+
+        -- function()
+        --     return coroutine.create(
+                -- function()
+                -- function(coro)
+                -- local opts = {}
+                -- local root = string.gsub(vim.fn.system(
+                --     "git rev-parse --show-toplevel"),
+                --     "\n",
+                --     ""
+                -- -- )
+                -- local root = Snacks.git.get_root()
+                -- if vim.v.shell_error == 1 then
+                --     root = "."
+                -- end
+                -- Snacks.picker.files(
+                --     {
+                --         cwd = root,
+                --         args = {"--type","x"},
+                --         hidden = true,
+                --         ignored=true,
+                --     }
+                -- )
+                -- pickers.new(
+                --     opts,
+                --     {
+                --         prompt_title = "Path to executable",
+                --         finder = finders.new_oneshot_job(
+                --             {
+                --                 "fd",
+                --                 "--hidden", "--no-ignore", "--type", "x",
+                --                 ".*",
+                --                 root,
+                --             },
+                --             {}
+                --         ),
+                --         sorter = conf.generic_sorter(opts),
+                --         attach_mappings = function(buffer_number)
+                --             actions.select_default:replace(
+                --                 function()
+                --                     actions.close(buffer_number)
+                --                     coroutine.resume(
+                --                         coro,
+                --                         action_state.get_selected_entry()[1]
+                --                     )
+                --                 end
+                --             )
+                --             return true
+                --         end,
+                --     }
+                -- ):find()
+        --     end
+        -- )
+        -- end,
+    },
+}
+
+-- same as C++ but searches in zig-out
+dap.configurations.zig = {
+    {
+        name = "Launch an executable",
+        type = "lldb",
+        request = "launch",
+        cwd = "${workspaceFolder}",
+        program = pick_file,
+            -- return coroutine.create(
+                -- function(coro)
+                -- local opts = {}
+                -- local root = string.gsub(vim.fn.system(
+                --     "git rev-parse --show-toplevel"),
+                --     "\n",
+                --     ""
+                -- )
+                -- if vim.v.shell_error == 1 then
+                --     root = "."
+                -- else
+                --     root = root .. "/zig-out"
+                -- end
+                -- pickers.new(
+                --     opts,
+                --     {
+                --         prompt_title = "Path to executable",
+                --         finder = finders.new_oneshot_job(
+                --             {
+                --                 "fd",
+                --                 "--hidden", "--no-ignore", "--type", "x",
+                --                 ".*",
+                --                 root,
+                --             },
+                --             {}
+                --         ),
+                --         sorter = conf.generic_sorter(opts),
+                --         attach_mappings = function(buffer_number)
+                --             actions.select_default:replace(
+                --                 function()
+                --                     actions.close(buffer_number)
+                --                     coroutine.resume(
+                --                         coro,
+                --                         action_state.get_selected_entry()[1]
+                --                     )
+                --                 end
+                --             )
+                --             return true
+                --         end,
+                --     }
+                -- ):find()
+            -- end
+        -- )
+        -- end,
+    },
+}
+
+-- debugger mappings -- using which-key to group it
+wk.add(
+    {
+        -- establish "d" as the prefix for the debugger
+        { "<leader>d", group="debug" },
+        {
+            '<leader>du',
+            function() require('dapui').toggle() end,
+            desc="debug: open ui"
+        },
+        {
+            '<leader>dc',
+            function() require('dap').continue() end,
+            desc="debug: continue/start the debugger"
+        },
+        {
+            '<leader>dl',
+            function() require('dap').run_last() end,
+            desc="debug: re-run the last debug session"
+        },
+        {
+            '<leader>b',
+            function() require('dap').toggle_breakpoint() end,
+            desc="debug: toggle breakpoint"
+        },
+        {
+            '<leader>di',
+            function() require('dap').step_into() end,
+            desc="debug: step in"
+        },
+        {
+            '<leader>do',
+            function() require('dap').step_out() end,
+            desc="debug: step out"
+        },
+        {
+            '<leader>o',
+            function() require('dap').step_over() end,
+            desc="debug: step over"
+        },
     }
+
 )
--- @} Markview
+
+require("nvim-dap-virtual-text").setup()
+-- @}
+
+-- @{ Trouble.nvim (Diagnostics) ("x" prefix")
+wk.add({"<Leader>x", group="Trouble (LSP Diagnostics)"})
+-- @}

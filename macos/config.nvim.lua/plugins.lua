@@ -22,15 +22,6 @@ local result = {
     -- colorscheme
     {
         'EdenEast/nightfox.nvim',
-        lazy = false,
-        priority = 1000,
-        config = function()
-            ---@diagnostic disable-next-line: missing-fields
-            require('nightfox').setup({})
-
-            -- Load the colorscheme here.
-            vim.cmd.colorscheme('nightfox')
-        end,
     },
 
     -- throwing a bunch extra in here for the plane/readability in case it
@@ -73,7 +64,11 @@ local result = {
     -- fancy status line
     {
         'nvim-lualine/lualine.nvim',
-        dependencies = { 'nvim-tree/nvim-web-devicons' }
+        dependencies = {
+            'nvim-tree/nvim-web-devicons',
+            'echasnovski/mini.icons',
+        },
+        event="VeryLazy",
     },
 
     -- highlight the cursor when you move between windows
@@ -82,27 +77,56 @@ local result = {
         event = "VeryLazy",
     },
 
-    -- fuzzy finder / telescope.nvim + plugins
     {
-        'nvim-telescope/telescope.nvim',
-        lazy = true,
-        cmd = {"Telescope",},
-        dependencies = {
-            'nvim-lua/plenary.nvim',
-            "smartpde/telescope-recent-files"
-        }
+        'nvim-lua/plenary.nvim',
     },
 
+    -- picker/fuzzy finder
     {
-	    "nvim-telescope/telescope-file-browser.nvim",
-        lazy = true,
-        cmd = {"Telescope",},
-	    config = function()
-		    -- To get telescope-file-browser loaded and working with telescope,
-		    -- you need to call load_extension, somewhere after setup function:
-		    require("telescope").load_extension("file_browser")
-		    require("telescope").load_extension("recent_files")
-	    end,
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        opts = {
+            -- modules I'm definitely using
+
+            -- handle big files better
+            bigfile = { enabled = true },
+            -- an alternate input box, with a normal mode importantly
+            -- when using the lsp.rename functionality, this pops up a little
+            -- box where you can go into normal mode to more easily edit the
+            -- new name
+            input = { enabled = true },
+            -- the plugin I Actually want from this -- fuzzy searcher picker
+            picker = { enabled = true },
+            quickfile = { enabled = true },
+            -- Scope detection, text objects and jumping based on treesitter or 
+            -- indent
+            scope = { enabled = true },
+            -- Auto-show LSP references and quickly navigate between them
+            words = { enabled = true },
+
+            -- disabled modules
+
+            -- file explorer plugin
+            -- check what these options do on the snacks github
+            explorer = { enabled = true, 
+               hidden=true, git_untracked=true, ignored=true },
+
+            -- landing page when you boot nvim (rather than a blank page)
+            dashboard = { enabled = false },
+            -- indent indicators.  visually distracting but might be
+            -- useful for python?  Might want to sit on this one
+            indent = { enabled = false },
+            -- "toast" style notifier
+            notifier = { enabled = false },
+            -- smooth scrolling
+            scroll = { enabled = false },
+            statuscolumn = { enabled = false },
+            toggle = { enabled = true },
+        },
+        keys = {
+            -- {"<Leader>r", function() Snacks.picker() end, desc=""},
+        },
     },
 
     -- python-indent
@@ -115,7 +139,8 @@ local result = {
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
-        event = "VeryLazy",
+        dependencies = {},
+        event="VeryLazy",
     },
 
     {
@@ -137,18 +162,15 @@ local result = {
     -- completion/LSP stuff
     {
         'saghen/blink.cmp',
+        event="VeryLazy",
 
         -- optional: provides snippets for the snippet source
         dependencies = { 'rafamadriz/friendly-snippets' },
 
-        ---@module 'blink.cmp'
-        ---@type blink.cmp.Config
         opts = {
-            -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
-            -- 'super-tab' for mappings similar to vscode (tab to accept)
+            -- Keymap preset
             -- 'enter' for enter to accept
-            -- 'none' for no mappings
-            --
+            -- 
             -- All presets have the following mappings:
             -- C-space: Open menu or open docs if already open
             -- C-n/C-p or Up/Down: Select next/previous item
@@ -168,30 +190,39 @@ local result = {
             },
             signature = {
                 window = { border = 'single' },
-                enabled = true, 
+                enabled = true,
             },
 
-            -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
-            -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
-            -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+            -- (Default) Rust fuzzy matcher for typo resistance and
+            -- significantly better performance You may use a lua
+            -- implementation instead by using `implementation = "lua"` or
+            -- fallback to the lua implementation, when the Rust fuzzy matcher
+            -- is not available, by using `implementation = "prefer_rust"`
             --
             -- See the fuzzy documentation for more information
             fuzzy = { implementation = "lua" },
-            -- fuzzy = { implementation = "prefer_rust_with_warning" }
-            -- fuzzy.prebuilt_binaries.force_version
-
-            -- Default list of enabled providers defined so that you can extend it
-            -- elsewhere in your config, without redefining it, due to `opts_extend`
-            sources = {
-                default = { 'lsp', 'path', 'snippets', 'buffer' },
-            },
         },
-
-        opts_extend = { "sources.default" }
     },
 
     {
         "neovim/nvim-lspconfig",
+        event = "VeryLazy",
+    },
+
+    -- "dap" plugins (Debugger adapter protocol)
+    {
+        'mfussenegger/nvim-dap',
+        event = "VeryLazy",
+    },
+    {
+        -- dap virtual text (show variable values inline)
+        'theHamsta/nvim-dap-virtual-text',
+    },
+    {
+        -- ui for dap stuff
+        "rcarriga/nvim-dap-ui",
+        dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
+        config = function() require("dapui").setup() end,
         event = "VeryLazy",
     },
 
@@ -200,12 +231,6 @@ local result = {
         "tpope/vim-surround",
         event = "VeryLazy",
     },
-
-    -- markdown rendering
-	{
-		"OXY2DEV/markview.nvim",
-        lazy = false,
-	},
 
     -- cmake
     {
@@ -217,10 +242,12 @@ local result = {
     -- for diagnostics 
     {
         "folke/trouble.nvim",
-        lazy = false,
-        opts = {},
+        opts = {
+            auto_show = true,
+        },
         cmd = "Trouble",
         keys = {
+            {"<Leader>x", group="Trouble (LSP Diagnostics)"},
             {
                 "<leader>xx",
                 function()
@@ -236,18 +263,18 @@ local result = {
                 desc = "Buffer Diagnostics (Trouble)",
             },
             {
-                "<leader>cs",
+                "<leader>ts",
                 function()
                     vim.cmd.Trouble("symbols toggle focus=false")
                 end,
-                desc = "Symbols (Trouble)",
+                desc = "Symbols Outline (Trouble)",
             },
             {
-                "<leader>cl",
+                "<leader>tl",
                 function()
                     vim.cmd.Trouble("lsp toggle focus=false win.position=right")
                 end,
-                desc = "LSP Definitions / references / ... (Trouble)",
+                desc = "LSP Definitions / references / ... Outline (Trouble)",
             },
             {
                 "<leader>xL",
@@ -277,9 +304,15 @@ local result = {
             icons = {
                 -- set icon mappings to true if you have a Nerd Font
                 mappings = true,
-                -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-                -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
+                -- If you are using a Nerd Font: set icons.keys to an empty
+                -- table which will use the default which-key.nvim defined Nerd
+                -- Font icons, otherwise define a string table
                 keys = {},
+                rules = {
+                    -- Propagating "Telescope" patterns to Picker stuff
+                    { pattern = "picker", icon = "", color = "orange" },
+                    { pattern = "swap", icon = "󰯎", color = "yellow" },
+                },
             },
         },
     },
@@ -289,13 +322,5 @@ if vim.env.OS == "WSL" then
     table.insert(result,{ 'OmniSharp/omnisharp-vim' })
 end
 
--- quadplay tooling
-local pyxldir = (
-    vim.env["HOME"] .. "/workspace/quadplay/tools/vim-pyxlscript-syntax"
-)
--- pyxlscript (quadplay scripting language)
-if vim.fn.isdirectory(pyxldir) then
-   -- table.insert(result, { dir=pyxldir })
-end
 
 return result
