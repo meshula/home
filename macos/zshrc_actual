@@ -214,6 +214,7 @@ alias mk='make "$@" 2>&1 | less'
 alias h='history 1 | grep $@'
 # alias ll='lsd -al'
 # alias ls='lsd'
+alias ll='ls -al`
 alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Xcode"'
 alias ll='ls --color=auto -alF'
 
