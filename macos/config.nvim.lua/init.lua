@@ -59,7 +59,8 @@ require('mappings')
 -- plugin configuration
 require('plugin_config')
 
-vim.cmd.colorscheme('nightfox')
+-- Use terminal colors instead of a custom colorscheme
+-- vim.cmd.colorscheme('nightfox')
 
 -- @{ look/color scheme stuff
 -- horizontal line under the cursor and 80 character colum
@@ -67,28 +68,29 @@ vim.opt.cursorline = true
 vim.opt.colorcolumn = "80"
 
 -- program language syntax on
-vim.opt.termguicolors = true
+-- Disable termguicolors to use terminal's color palette
+vim.opt.termguicolors = false
 
 -- set a different colorscheme in ssh mode
-local function detect_ssh()
-	local str = vim.env.SSH_CLIENT
-	if (str ~= nil) then
-		str = str:gsub("%s+", "")
-		str = string.gsub(str, "%s+", "")
-
-		if (str ~= "") then
-			vim.cmd.colorscheme('duskfox')
-		end
-	end
-end
-detect_ssh()
+-- local function detect_ssh()
+-- 	local str = vim.env.SSH_CLIENT
+-- 	if (str ~= nil) then
+-- 		str = str:gsub("%s+", "")
+-- 		str = string.gsub(str, "%s+", "")
+--
+-- 		if (str ~= "") then
+-- 			vim.cmd.colorscheme('duskfox')
+-- 		end
+-- 	end
+-- end
+-- detect_ssh()
 
 -- toggle line numbers between absolute and relative
 vim.api.nvim_create_autocmd(
     "InsertEnter",
     {
         callback = function()
-            vim.opt.relativenumber = false
+            vim.opt.relativenumber = true
         end,
     }
 )
@@ -96,13 +98,13 @@ vim.api.nvim_create_autocmd(
     "InsertLeave",
     {
         callback = function()
-            vim.opt.relativenumber = true
+            vim.opt.relativenumber = false
         end,
     }
 )
 
 vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 
 -- @{ undo
 vim.opt.undofile = true
@@ -156,6 +158,19 @@ vim.api.nvim_create_autocmd(
         pattern = "*.wgsl",
         callback = function()
             vim.bo.filetype = "wgsl"
+        end,
+    }
+)
+-- @}
+
+-- @{ Enable wrap and linebreak for text files
+vim.api.nvim_create_autocmd(
+    {"BufEnter", "BufWinEnter"},
+    {
+        pattern = {"*.md", "*.txt", "*.html"},
+        callback = function()
+            vim.opt_local.wrap = true
+            vim.opt_local.linebreak = true
         end,
     }
 )
