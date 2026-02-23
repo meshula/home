@@ -30,11 +30,6 @@ vim.keymap.set(
     {silent= true, desc="save this buffer"}
 )
 
--- @{ use jk kj to exit insert mode
-vim.keymap.set("i","jk","<Esc>", {noremap=true, desc = "escape alias"})
-vim.keymap.set("i","kj","<Esc>", {noremap=true, desc = "escape alias"})
--- @}
-
 -- @{ splits
 vim.keymap.set(
     "n",
@@ -104,3 +99,17 @@ vim.keymap.set(
     function() vim.cmd.make("check") end,
     {noremap=true, desc="build target `make check`"}
 )
+
+-- @{ Sublime-style arrow key navigation (display/visual line movement)
+--    Arrow keys follow display lines (wrapping), leaving h/j/k/l for
+--    traditional vim (logical line) navigation.
+local opts = { noremap = true, silent = true }
+vim.keymap.set('n', '<Down>',  'gj', opts)
+vim.keymap.set('n', '<Up>',    'gk', opts)
+vim.keymap.set('n', '<Left>',  'h', opts)
+vim.keymap.set('n', '<Right>', 'l', opts)
+vim.keymap.set('v', '<Down>',  'gj', opts)
+vim.keymap.set('v', '<Up>',    'gk', opts)
+vim.keymap.set('v', '<Left>',  'h', opts)
+vim.keymap.set('v', '<Right>', 'l', opts)
+-- @}

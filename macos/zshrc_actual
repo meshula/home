@@ -15,9 +15,6 @@ setopt incappendhistory            # Immediately append to the history file, not
 set    histignorespace   true
 # @}
 
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/nporcino/.oh-my-zsh
-
 DEFAULT_USER=nporcino
 
 # Set name of the theme to load. Optionally, if you set this to "random"
@@ -167,8 +164,6 @@ esac
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git python pip github zsh-syntax-highlighting)
@@ -201,14 +196,9 @@ zle -N zle-line-init
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias mk='make "$@" 2>&1 | less'
 alias h='history 1 | grep $@'
@@ -218,14 +208,10 @@ alias ll='ls -al`
 alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Xcode"'
 alias ll='ls --color=auto -alF'
 
-#eval "$(starship init zsh)"
 eval `ssh-agent`
 autoload -U +X bashcompinit && bashcompinit
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme 2>/dev/null || echo "Powerlevel10k theme not found"
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Claude Code configuration
 export CLAUDE_CODE_MAX_OUTPUT_TOKENS=32000
 export MAX_THINKING_TOKENS=16384
+
