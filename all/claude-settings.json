@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "medium",
+  "model": "sonnet",
+  {
+      "attribution" : {
+          "commit": "",
+          "pr": ""
+      }
+  }
+}
