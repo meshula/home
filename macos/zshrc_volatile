@@ -4,7 +4,7 @@
 # file. To keep it clean, we will source the actual zshrc from zshrc_actual.
 source "/Users/nporcino/dev/Lab/home/macos/zshrc_actual"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# set up z in shell
+eval "$(zoxide init zsh)"
+eval "$(fzf --zsh)"
 

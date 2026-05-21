@@ -182,6 +182,7 @@ local result = {
 
             -- show the documentation popup when manually triggered
             completion = {
+                list = { selection = { preselect = false, auto_insert = false } },
                 menu = { border = 'single' },
                 documentation = {
                     auto_show = true ,
