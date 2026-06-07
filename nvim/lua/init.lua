@@ -51,13 +51,28 @@ vim.opt.rtp:prepend(lazypath)
 -- load my plugins into lazy
 require('lazy').setup('plugins')
 
-require('lsp')
+-- Load each config module in its own pcall so that one broken module (e.g. a
+-- plugin API change) reports itself instead of silently aborting init.lua and
+-- taking every setting below it down with it.
+local function safe_require(mod)
+    local ok, err = pcall(require, mod)
+    if not ok then
+        vim.schedule(function()
+            vim.notify(
+                "init.lua: failed to load '" .. mod .. "':\n" .. tostring(err),
+                vim.log.levels.ERROR
+            )
+        end)
+    end
+end
+
+safe_require('lsp')
 
 -- keyboard mappings
-require('mappings')
+safe_require('mappings')
 
 -- plugin configuration
-require('plugin_config')
+safe_require('plugin_config')
 
 -- Use terminal colors instead of a custom colorscheme
 -- vim.cmd.colorscheme('nightfox')
@@ -114,6 +129,7 @@ vim.opt.undofile = true
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
 -- @}
 
 -- @{ search
@@ -158,6 +174,17 @@ vim.api.nvim_create_autocmd(
         pattern = "*.wgsl",
         callback = function()
             vim.bo.filetype = "wgsl"
+        end,
+    }
+)
+-- .mm is Objective-C++ (Vim's default treats it as nroff/groff, which gives
+-- no useful coloring). objcpp sources both the ObjC and C++ syntax.
+vim.api.nvim_create_autocmd(
+    { "BufNewFile", "BufRead"},
+    {
+        pattern = "*.mm",
+        callback = function()
+            vim.bo.filetype = "objcpp"
         end,
     }
 )

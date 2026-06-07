@@ -138,6 +138,7 @@ local result = {
     -- tree sitter built in advanced syntax stuff
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = "master",
         build = ':TSUpdate',
         dependencies = {},
         event="VeryLazy",
@@ -165,7 +166,7 @@ local result = {
         event="VeryLazy",
 
         -- optional: provides snippets for the snippet source
-        dependencies = { 'rafamadriz/friendly-snippets' },
+        dependencies = { 'saghen/blink.lib', 'rafamadriz/friendly-snippets' },
 
         opts = {
             -- Keymap preset

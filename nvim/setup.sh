@@ -46,4 +46,20 @@ echo "  $NVIM_CONFIG/init.lua -> $SCRIPT_DIR/init.lua"
 echo "  $NVIM_CONFIG/lua -> $SCRIPT_DIR/lua/"
 echo "  $NVIM_CONFIG/lazy-lock.json -> $SCRIPT_DIR/lazy-lock.json"
 echo ""
-echo "Done. Launch nvim to verify plugins install correctly."
+echo "Syncing plugins to the locked, known-good state..."
+if nvim --headless "+Lazy! sync" +qa; then
+    echo "  plugins synced."
+else
+    echo "  WARNING: plugin sync reported an error; launch nvim and run :Lazy to inspect."
+fi
+
+echo ""
+echo "Verifying the config loads without errors..."
+if nvim --headless "+lua vim.cmd('messages')" +qa 2>&1 | grep -qiE 'error|failed to load'; then
+    echo "  WARNING: errors detected on startup; launch nvim to investigate."
+else
+    echo "  config loaded cleanly."
+fi
+
+echo ""
+echo "Done."
