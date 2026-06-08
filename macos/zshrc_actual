@@ -15,14 +15,7 @@ setopt incappendhistory            # Immediately append to the history file, not
 set    histignorespace   true
 # @}
 
-DEFAULT_USER=nporcino
-
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="agnoster"
-
-# theme.sh flat
+DEFAULT_USER=domenico
 
 # determine current operating system & local build directories
 #################################################################
@@ -77,13 +70,6 @@ case $OS in
         # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\\177/' > /var/tmp/$TERM.ti
         # tic /var/tmp/$TERM.ti
         # rm /var/tmp/$TERM.ti
-
-        export PATH="/Users/nporcino/.cargo/bin:/Users/nporcino/bin:/usr/bin:$PATH:/usr/local/bin"
-        export PATH="$HOME/miniforge3/bin:$PATH"
-        source "$HOME/miniforge3/etc/profile.d/conda.sh"
-        conda activate
-        
-        echo "conda activated"
         ;;
 
     "Linux" )
@@ -170,8 +156,6 @@ plugins=(git python pip github zsh-syntax-highlighting)
 
 # User configuration
 
-# export MANPATH="/usr/local/man:$MANPATH"
-
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
@@ -192,26 +176,14 @@ function zle-line-init zle-keymap-select {
 }
 zle -N zle-line-init
 
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 
 alias mk='make "$@" 2>&1 | less'
 alias h='history 1 | grep $@'
-# alias ll='lsd -al'
-# alias ls='lsd'
-alias ll='ls -al`
 alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Xcode"'
 alias ll='ls --color=auto -alF'
 
-eval `ssh-agent`
-autoload -U +X bashcompinit && bashcompinit
-
-# Claude Code configuration
-export CLAUDE_CODE_MAX_OUTPUT_TOKENS=32000
-export MAX_THINKING_TOKENS=16384
-
+## Custom prompt - sourced from separate file
+source "$HOME/lab/home/macos/zsh_prompt_theme"

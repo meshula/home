@@ -1,0 +1,18 @@
+## Custom prompt: horizontal rule + pwd + ">" symbol
+
+_draw_rule() {
+  printf '%0.s─' {1..40}
+}
+
+_draw_prompt() {
+  local rule=$(_draw_rule)
+  PROMPT="${rule}
+%~
+> "
+}
+
+_draw_prompt
+
+precmd() {
+  _draw_prompt
+}
