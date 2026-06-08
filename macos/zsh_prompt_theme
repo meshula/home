@@ -5,9 +5,16 @@ _draw_rule() {
 }
 
 _draw_prompt() {
+  local _old_status=$?
   local rule=$(_draw_rule)
-  PROMPT="${rule}
-%~
+  local color
+  if (( _old_status == 0 )); then
+    color="green"
+  else
+    color="red"
+  fi
+  PROMPT="%F{${color}}${rule}%f
+%F{blue}%~%f
 > "
 }
 
