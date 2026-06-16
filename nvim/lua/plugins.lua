@@ -138,10 +138,9 @@ local result = {
     -- tree sitter built in advanced syntax stuff
     {
         'nvim-treesitter/nvim-treesitter',
-        branch = "master",
-        build = ':TSUpdate',
-        dependencies = {},
-        event="VeryLazy",
+        branch = "main",
+        build = ":TSUpdate",
+        lazy = false,
     },
 
     {
@@ -149,10 +148,6 @@ local result = {
         opts = {},
         event = "VeryLazy",
         enabled = vim.fn.has("nvim-0.10.0") == 1,
-    },
-    {
-        'JoosepAlviste/nvim-ts-context-commentstring',
-        event = "VeryLazy",
     },
 
     -- zig

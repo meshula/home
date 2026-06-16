@@ -181,17 +181,6 @@ vim.keymap.set(
     {noremap=true, desc="open keymappings in WhichKey"}
 )
 
--- @{ treesitter
-require('nvim-treesitter.configs').setup {
-    ensure_installed = {"wgsl"},
-    indent = {
-        -- excited about this for the future, but for now, it seems to make 8 
-        -- space indents in C++, so I'm skipping it
-        enable = false,
-    }
-}
--- @}
-
 -- @{ search in the quadplay manual
 function QuadplayManualLookup()
     local search_phrase = '^`' .. vim.fn.expand('<cword>') .. '(.*)`$'
@@ -255,33 +244,44 @@ vim.keymap.set(
     }
 )
 
--- @{ treesitter
-require('nvim-treesitter.configs').setup {
-    -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-    ensure_installed = {
+-- @{ treesitter (main-branch API)
+-- Install parsers (async; only fetches missing ones).
+require('nvim-treesitter').install({
+    "c",
+    "cpp",
+    "python",
+    "toml",
+    "zig",
+    "yaml",
+    "json",
+    "lua",
+    "markdown",
+    "markdown_inline",
+    "wgsl",
+})
+
+-- The json parser handles JSON-with-comments fine; alias the jsonc filetype
+-- to it so vim.treesitter.start() finds a parser on .jsonc buffers.
+vim.treesitter.language.register("json", "jsonc")
+
+-- Enable Tree-sitter highlighting per filetype. markdown_inline is injected
+-- by the markdown parser, so it doesn't need its own filetype entry.
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {
         "c",
         "cpp",
         "python",
         "toml",
         "zig",
         "yaml",
+        "json",
         "jsonc",
-        "lua"
+        "lua",
+        "markdown",
+        "wgsl",
     },
-    ignore_install = { "javascript" }, -- List of parsers to ignore installing
-    highlight = {
-        enable = true,              -- false will disable the whole extension
-        disable = {},  -- list of language that will be disabled
-        -- disable = { "c", "rust" },  -- list of language that will be disabled
-        -- Setting this to true will run `:h syntax` and tree-sitter at the
-        -- same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for
-        -- indentation). Using this option may slow down your editor, and you
-        -- may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
-        additional_vim_regex_highlighting = false,
-    },
-}
+    callback = function() vim.treesitter.start() end,
+})
 -- @}
 
 -- @{ Settings for the built in comment system

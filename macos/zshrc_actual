@@ -186,4 +186,4 @@ alias xcmake='cmake -DCMAKE_INSTALL_PREFIX=./install -DCMAKE_EXPORT_COMPILE_COMM
 alias ll='ls --color=auto -alF'
 
 ## Custom prompt - sourced from separate file
-source "$HOME/lab/home/macos/zsh_prompt_theme"
+source "$HOME/dev/lab/home/macos/zsh_prompt_theme"

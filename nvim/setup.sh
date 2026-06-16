@@ -23,6 +23,24 @@ else
     echo "  neovim: $(nvim --version | head -1)"
 fi
 
+# nvim-treesitter `main` branch compiles parsers locally via the
+# `tree-sitter` CLI; install it if missing. Note: Homebrew's `tree-sitter`
+# formula now installs only the C library (libtree-sitter); the CLI binary
+# lives in a separate formula, `tree-sitter-cli`.
+if ! command -v tree-sitter &> /dev/null; then
+    echo ""
+    if command -v brew &> /dev/null; then
+        echo "Installing tree-sitter CLI via Homebrew..."
+        brew install tree-sitter-cli
+    else
+        echo "tree-sitter CLI is not installed and Homebrew is not available."
+        echo "Please install it manually: https://tree-sitter.github.io/tree-sitter/cli/"
+        exit 1
+    fi
+else
+    echo "  tree-sitter: $(tree-sitter --version)"
+fi
+
 # Create ~/.config/nvim if needed
 mkdir -p "$NVIM_CONFIG"
 
@@ -51,6 +69,19 @@ if nvim --headless "+Lazy! sync" +qa; then
     echo "  plugins synced."
 else
     echo "  WARNING: plugin sync reported an error; launch nvim and run :Lazy to inspect."
+fi
+
+# Tree-sitter parsers (nvim-treesitter `main` branch installs asynchronously,
+# so a plain headless `:Lazy! sync` can quit before parsers finish compiling).
+# Block here until install/update is done. Keep this list in sync with the
+# `require('nvim-treesitter').install({...})` call in lua/plugin_config.lua.
+echo ""
+echo "Installing/updating Tree-sitter parsers..."
+TS_PARSERS="'c','cpp','python','toml','zig','yaml','json','lua','markdown','markdown_inline','wgsl'"
+if nvim --headless "+lua require('nvim-treesitter').install({ $TS_PARSERS }):wait(300000)" +qa; then
+    echo "  parsers ready."
+else
+    echo "  WARNING: parser install reported an error; launch nvim and run :TSUpdate to inspect."
 fi
 
 echo ""
